@@ -6,15 +6,18 @@ spring:
     name: api-gateway
   cloud:
     gateway:
-      routes:
-        - id: shortener-service-route
-          uri: lb://shortener-service
-          predicates:
-            - Path=/api/shorten/**
-        - id: redirect-service-route
-          uri: lb://redirect-service
-          predicates:
-            - Path=/api/redirect/**
+      server:
+        webflux:
+          routes:
+            - id: shortener-service-route
+              uri: lb://shortener-service
+              predicates:
+                - Path=/api/shorten,/api/shorten/**,/api/urls/**
+
+            - id: redirect-service-route
+              uri: lb://redirect-service
+              predicates:
+                - Path=/api/redirect/**
 
 eureka:
   client:
@@ -27,4 +30,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: gateway
+        include: "*"
+  endpoint:
+    gateway:
+      enabled: true
