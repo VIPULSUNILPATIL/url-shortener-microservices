@@ -75,8 +75,10 @@ Built `shortener-service` on port `8080`. `POST /api/shorten` saves a URL and Ba
 ### ✅ Day 6–7 — Redirect Service
 Built `redirect-service` on port `8081`. `GET /api/redirect/{code}` calls `shortener-service` via a Feign client (own independent Eureka lookup) and returns an HTTP 302 with the original URL in the `Location` header.
 
+### ✅ Day 8 — Docker
+Containerized all five services, docker-compose for local orchestration
+
 ### ⏳ Upcoming
-- **Docker** — containerize all five services, docker-compose for local orchestration
 - **AWS EC2** — deployment, final docs pass, interview writeup
 
 ## 🏃 How to Run Locally
@@ -116,6 +118,24 @@ Look for `< HTTP/1.1 302 Found` and `< Location: <originalUrl>` in the output.
 
 **6. Failure-path check** (manual, no automated test yet): stop `shortener-service`, then hit `/api/redirect/<code>` — currently fails immediately with a connection error rather than degrading gracefully.
 
+## 📸 Proof of Working System
+
+All five services running together via `docker compose up`, fully registered with Eureka, and passing the full shorten → resolve → redirect chain through the gateway.
+
+| | |
+|---|---|
+| **All 5 containers running** | ![Docker Desktop containers](docs/screenshots/docker-desktop-containers.png) |
+| **`docker compose ps` output** | ![docker compose ps](docs/screenshots/docker-compose-ps.png) |
+| **Eureka dashboard — all clients registered** | ![Eureka dashboard](docs/screenshots/eureka-dashboard.png) |
+| **`POST /api/shorten` via gateway** | ![Shorten response](docs/screenshots/shorten-response.png) |
+| **`GET /api/urls/{code}` resolve** | ![Resolve response](docs/screenshots/resolve-response.png) |
+| **302 redirect — raw headers (`curl -v`)** | ![Redirect headers](docs/screenshots/redirect-headers.png) |
+| **Real browser redirect landing on target URL** | ![Browser redirect 1](docs/screenshots/browser-redirect_1.png) |
+| **Real browser redirect landing on target URL** | ![Browser redirect 2](docs/screenshots/browser-redirect_2.png) |
+| **Service discovery resilience — shortener-service stopped** | ![Service down](docs/screenshots/service-discovery-down.png) |
+| **Service discovery resilience — auto-recovered after restart** | ![Service recovered](docs/screenshots/service-discovery-recovered.png) |
+| **Full 5-service startup logs** | ![Startup logs](docs/screenshots/startup-logs.png) |
+
 ## Repository Structure
 
 ```
@@ -125,6 +145,8 @@ url-shortener-microservices/
 ├── api-gateway/
 ├── shortener-service/
 ├── redirect-service/
+├── docs/
+│   └── screenshots/
 └── README.md
 ```
 

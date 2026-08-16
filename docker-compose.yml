@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  naming-server:
+    build: ./naming-server
+    ports:
+      - "8761:8761"
+
+  config-server:
+    build: ./config-server
+    ports:
+      - "8888:8888"
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8765:8765"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka/
+    depends_on:
+      - naming-server
+
+  shortener-service:
+    build: ./shortener-service
+    ports:
+      - "8080:8080"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka/
+    depends_on:
+      - naming-server
+
+  redirect-service:
+    build: ./redirect-service
+    ports:
+      - "8081:8081"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka/
+    depends_on:
+      - naming-server
